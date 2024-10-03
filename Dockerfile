@@ -1,22 +1,24 @@
 FROM ubuntu:20.04
 
 LABEL maintainer="hello@kesaralive.com"
-LABEL description="Apache / PHP development environment"
+LABEL description="Apache / PHP development environment with Python and pytest"
 
 # Set ARG and Environment Variables
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Install required dependencies and add the PHP PPA repository
+# Install required dependencies, Python, and add the PHP PPA repository
 RUN apt-get update && apt-get install -y \
     lsb-release \
     ca-certificates \
     apt-transport-https \
     software-properties-common \
-    locales && \
+    locales \
+    python3 \
+    python3-pip && \
     add-apt-repository ppa:ondrej/php && \
     apt-get update
 
-# Install Apache, PHP 8.0 and extensions
+# Install Apache, PHP 8.0, and extensions
 RUN apt-get install -y \
     apache2 \
     php8.0 \
@@ -32,6 +34,9 @@ RUN apt-get install -y \
     nano && \
     locale-gen fr_FR.UTF-8 en_US.UTF-8 de_DE.UTF-8 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install pytest using pip
+RUN pip3 install pytest
 
 # Configure PHP for development
 RUN sed -i -e 's/^error_reporting\s*=.*/error_reporting = E_ALL/' /etc/php/8.0/apache2/php.ini && \
